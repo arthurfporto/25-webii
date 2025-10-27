@@ -41,11 +41,13 @@ describe('Question API - Endpoints', () => {
   describe('GET /questions/:id', () => {
     it('deve retornar questão específica com status 200', async () => {
       // Cria professor
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Question Test',
-        email: `prof.question${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Question Test',
+          email: `prof.question${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       // Cria disciplina
       const disciplina = await request(app).post('/subjects').send({
@@ -91,11 +93,13 @@ describe('Question API - Endpoints', () => {
   describe('POST /questions', () => {
     it('deve criar nova questão com dados válidos', async () => {
       // Cria professor e disciplina
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Create Question',
-        email: `prof.createq${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Create Question',
+          email: `prof.createq${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Create Question',
@@ -121,11 +125,13 @@ describe('Question API - Endpoints', () => {
     });
 
     it('deve criar questão sem resposta_correta (campo opcional)', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -147,11 +153,13 @@ describe('Question API - Endpoints', () => {
     });
 
     it('deve retornar 400 ao criar questão sem enunciado', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -164,7 +172,9 @@ describe('Question API - Endpoints', () => {
         autorId: professor.body.data.id,
       };
 
-      const response = await request(app).post('/questions').send(questionInvalida);
+      const response = await request(app)
+        .post('/questions')
+        .send(questionInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -172,11 +182,13 @@ describe('Question API - Endpoints', () => {
     });
 
     it('deve retornar 400 ao criar questão sem dificuldade', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -189,7 +201,9 @@ describe('Question API - Endpoints', () => {
         autorId: professor.body.data.id,
       };
 
-      const response = await request(app).post('/questions').send(questionInvalida);
+      const response = await request(app)
+        .post('/questions')
+        .send(questionInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -197,11 +211,13 @@ describe('Question API - Endpoints', () => {
     });
 
     it('deve retornar 400 ao criar questão com disciplinaId inexistente', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const questionInvalida = {
         enunciado: 'Questão teste',
@@ -210,7 +226,9 @@ describe('Question API - Endpoints', () => {
         autorId: professor.body.data.id,
       };
 
-      const response = await request(app).post('/questions').send(questionInvalida);
+      const response = await request(app)
+        .post('/questions')
+        .send(questionInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -218,11 +236,13 @@ describe('Question API - Endpoints', () => {
     });
 
     it('deve retornar 400 ao criar questão com autorId inexistente', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -236,7 +256,9 @@ describe('Question API - Endpoints', () => {
         autorId: 99999,
       };
 
-      const response = await request(app).post('/questions').send(questionInvalida);
+      const response = await request(app)
+        .post('/questions')
+        .send(questionInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -247,11 +269,13 @@ describe('Question API - Endpoints', () => {
   describe('PUT /questions/:id', () => {
     it('deve atualizar questão existente', async () => {
       // Cria professor e disciplina
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Update Question',
-        email: `prof.updateq${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Update Question',
+          email: `prof.updateq${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Update Question',
@@ -269,12 +293,10 @@ describe('Question API - Endpoints', () => {
       const questionId = novaQuestion.body.data.id;
 
       // Atualiza a questão
-      const response = await request(app)
-        .put(`/questions/${questionId}`)
-        .send({
-          enunciado: 'Questão Atualizada',
-          dificuldade: 3,
-        });
+      const response = await request(app).put(`/questions/${questionId}`).send({
+        enunciado: 'Questão Atualizada',
+        dificuldade: 3,
+      });
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
@@ -295,11 +317,13 @@ describe('Question API - Endpoints', () => {
 
     it('deve retornar 400 ao atualizar com disciplinaId inexistente', async () => {
       // Cria estrutura básica
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -327,11 +351,13 @@ describe('Question API - Endpoints', () => {
 
     it('deve retornar 400 ao atualizar com autorId inexistente', async () => {
       // Cria estrutura básica
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Test',
@@ -361,11 +387,13 @@ describe('Question API - Endpoints', () => {
   describe('DELETE /questions/:id', () => {
     it('deve deletar questão existente', async () => {
       // Cria estrutura completa
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Delete Question',
-        email: `prof.deleteq${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Delete Question',
+          email: `prof.deleteq${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const disciplina = await request(app).post('/subjects').send({
         nome: 'Disciplina Delete Question',

@@ -2,6 +2,8 @@
 import express from 'express';
 import prisma from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
+import subjectRoutes from './routes/subjectRoutes.js';
+import questionRoutes from './routes/questionRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,7 +44,10 @@ app.get('/health', async (req, res) => {
 });
 
 // Rotas da API
-app.use('/users', userRoutes); // <--
+app.use('/users', userRoutes);
+app.use('/subjects', subjectRoutes);
+app.use('/questions', questionRoutes);
+// <--
 
 // Middleware de tratamento de rotas não encontradas
 app.use((req, res) => {
@@ -57,6 +62,8 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`👥 Usuários: http://localhost:${PORT}/users`);
+  console.log(`📚 Disciplinas: http://localhost:${PORT}/subjects`);
+  console.log(`❓ Questões: http://localhost:${PORT}/questions`);
 });
 
 // Export default para ES Modules

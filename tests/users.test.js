@@ -44,11 +44,13 @@ describe('User API - Endpoints', () => {
       // Se não houver usuários, cria um
       let userId;
       if (todosUsuarios.body.data.length === 0) {
-        const novoUsuario = await request(app).post('/users').send({
-          nome: 'Usuário Teste',
-          email: `teste${Date.now()}@escola.com`,
-          senha: 'senha123',
-        });
+        const novoUsuario = await request(app)
+          .post('/users')
+          .send({
+            nome: 'Usuário Teste',
+            email: `teste${Date.now()}@escola.com`,
+            senha: 'senha123',
+          });
         userId = novoUsuario.body.data.id;
       } else {
         userId = todosUsuarios.body.data[0].id;
@@ -112,7 +114,6 @@ describe('User API - Endpoints', () => {
       expect(response.body.message).toContain('obrigatório');
     });
 
-
     it('deve retornar 400 ao criar usuário com email duplicado', async () => {
       const email = `duplicado${Date.now()}@escola.com`;
 
@@ -139,20 +140,20 @@ describe('User API - Endpoints', () => {
   describe('PUT /users/:id', () => {
     it('deve atualizar usuário existente', async () => {
       // Cria usuário para testar
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Original',
-        email: `original${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Usuario Original',
+          email: `original${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
       // Atualiza o usuário
-      const response = await request(app)
-        .put(`/users/${userId}`)
-        .send({
-          nome: 'Usuario Atualizado',
-        });
+      const response = await request(app).put(`/users/${userId}`).send({
+        nome: 'Usuario Atualizado',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
@@ -172,17 +173,21 @@ describe('User API - Endpoints', () => {
 
     it('deve retornar 400 ao tentar usar email já existente', async () => {
       // Cria dois usuários
-      const usuario1 = await request(app).post('/users').send({
-        nome: 'Usuario 1',
-        email: `user1${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const usuario1 = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Usuario 1',
+          email: `user1${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
-      const usuario2 = await request(app).post('/users').send({
-        nome: 'Usuario 2',
-        email: `user2${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const usuario2 = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Usuario 2',
+          email: `user2${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       // Tenta atualizar usuario2 com email do usuario1
       const response = await request(app)
@@ -200,11 +205,13 @@ describe('User API - Endpoints', () => {
   describe('DELETE /users/:id', () => {
     it('deve deletar usuário existente', async () => {
       // Cria usuário para deletar
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Para Deletar',
-        email: `deletar${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Usuario Para Deletar',
+          email: `deletar${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
