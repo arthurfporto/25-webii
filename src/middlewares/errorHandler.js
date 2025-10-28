@@ -8,9 +8,9 @@ import { AppError } from '../errors/AppError.js';
  * IMPORTANTE: Deve ser o ÚLTIMO middleware registrado no Express!
  */
 const errorHandler = (error, req, res, next) => {
+   // Log do erro para debugging
   console.log(next);
     console.log('Erro capturado: ', error)
-  // // Log estruturado do erro para monitoramento e depuração.
   
   console.error('❌ Erro capturado:', {
     message: error.message,
