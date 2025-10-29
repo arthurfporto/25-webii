@@ -1,7 +1,7 @@
 // src/server.js
 import express from 'express';
 import prisma from './config/database.js';
-import userRoutes from './routes/userRoutes.js';
+import v1Routes from './api/v1/routes/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
@@ -30,6 +30,7 @@ app.get('/health', async (req, res) => {
     message: 'API do Gerador de Provas',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
+    availableVersions: ['v1'],
     services: {
       api: 'OK',
       database: {
@@ -40,8 +41,8 @@ app.get('/health', async (req, res) => {
   });
 });
 
-// Rotas da API
-app.use('/users', userRoutes);
+// Rotas da API v1
+app.use('/v1', v1Routes);
 
 // Middleware de tratamento de rotas não encontradas
 app.use((req, res) => {
@@ -51,6 +52,7 @@ app.use((req, res) => {
       code: 'NOT_FOUND',
       message: `Rota ${req.method} ${req.originalUrl} não encontrada`,
     },
+    hint: 'Versões disponíveis: /v1', // <- Novo
     timestamp: new Date().toISOString(),
     path: req.path,
   });
@@ -61,9 +63,11 @@ app.use(errorHandler);
 
 // Inicializar servidor
 app.listen(PORT, () => {
+  // <-- Novo
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`👥 Usuários: http://localhost:${PORT}/users`);
+  console.log(`📦 API v1: http://localhost:${PORT}/v1`);
+  console.log(`👥 Usuários v1: http://localhost:${PORT}/v1/users`);
 });
 
 export default app;

@@ -1,10 +1,10 @@
 // src/services/userService.js
-import prisma from '../config/database.js';
+import prisma from '../../../config/database.js';
 import {
   ValidationError,
   NotFoundError,
   ConflictError,
-} from '../errors/AppError.js';
+} from '../../../errors/AppError.js';
 
 /**
  * User Service

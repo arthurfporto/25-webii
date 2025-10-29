@@ -1,4 +1,4 @@
-// tests/users.test.js
+// tests/v1/users.test.js
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import app from '../src/server.js';
@@ -11,9 +11,9 @@ import app from '../src/server.js';
 describe('User API - Endpoints com Validação', () => {
   let createdUserId; // Para armazenar ID de usuário criado nos testes
 
-  describe('GET /users', () => {
+  describe('GET /v1/users', () => {
     it('deve retornar lista de usuários com status 200', async () => {
-      const response = await request(app).get('/users');
+      const response = await request(app).get('/v1/users');
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
@@ -23,7 +23,7 @@ describe('User API - Endpoints com Validação', () => {
     });
 
     it('deve retornar usuários sem campo senha', async () => {
-      const response = await request(app).get('/users');
+      const response = await request(app).get('/v1/users');
 
       expect(response.status).toBe(200);
 
@@ -37,18 +37,20 @@ describe('User API - Endpoints com Validação', () => {
     });
   });
 
-  describe('GET /users/:id', () => {
+  describe('GET /v1/users/:id', () => {
     it('deve retornar usuário específico com status 200', async () => {
       // Cria um usuário para o teste
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario GetById Test',
-        email: `getbyid${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario GetById Test',
+          email: `getbyid${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
-      const response = await request(app).get(`/users/${userId}`);
+      const response = await request(app).get(`/v1/users/${userId}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
@@ -57,7 +59,7 @@ describe('User API - Endpoints com Validação', () => {
     });
 
     it('deve retornar 404 para usuário inexistente', async () => {
-      const response = await request(app).get('/users/99999');
+      const response = await request(app).get('/v1/users/99999');
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('success', false);
@@ -66,7 +68,7 @@ describe('User API - Endpoints com Validação', () => {
     });
 
     it('deve retornar 400 para ID inválido (letras)', async () => {
-      const response = await request(app).get('/users/abc');
+      const response = await request(app).get('/v1/users/abc');
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -76,7 +78,7 @@ describe('User API - Endpoints com Validação', () => {
     });
 
     it('deve retornar 400 para ID negativo', async () => {
-      const response = await request(app).get('/users/-1');
+      const response = await request(app).get('/v1/users/-1');
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -84,7 +86,7 @@ describe('User API - Endpoints com Validação', () => {
     });
   });
 
-  describe('POST /users - Validações', () => {
+  describe('POST /v1/users - Validações', () => {
     it('deve criar novo usuário com dados válidos', async () => {
       const novoUsuario = {
         nome: 'Prof. Teste Completo',
@@ -93,7 +95,7 @@ describe('User API - Endpoints com Validação', () => {
         papel: 'PROFESSOR',
       };
 
-      const response = await request(app).post('/users').send(novoUsuario);
+      const response = await request(app).post('/v1/users').send(novoUsuario);
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('success', true);
@@ -113,7 +115,7 @@ describe('User API - Endpoints com Validação', () => {
         senha: 'senha123',
       };
 
-      const response = await request(app).post('/users').send(novoUsuario);
+      const response = await request(app).post('/v1/users').send(novoUsuario);
 
       expect(response.status).toBe(201);
       expect(response.body.data.nome).toBe('Prof. Com Espaços'); // trimmed
@@ -129,7 +131,9 @@ describe('User API - Endpoints com Validação', () => {
         senha: 'senha123',
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -148,7 +152,9 @@ describe('User API - Endpoints com Validação', () => {
         senha: 'senha123',
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -165,7 +171,9 @@ describe('User API - Endpoints com Validação', () => {
         senha: 'senha123',
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -183,7 +191,9 @@ describe('User API - Endpoints com Validação', () => {
         senha: '123', // Menos de 6 caracteres
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -201,7 +211,9 @@ describe('User API - Endpoints com Validação', () => {
         papel: 'HACKER', // Papel inválido
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -218,7 +230,9 @@ describe('User API - Endpoints com Validação', () => {
         senha: '123', // Muito curta
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -230,14 +244,14 @@ describe('User API - Endpoints com Validação', () => {
       const email = `duplicado${Date.now()}@escola.com`;
 
       // Cria primeiro usuário
-      await request(app).post('/users').send({
+      await request(app).post('/v1/users').send({
         nome: 'Primeiro',
         email: email,
         senha: 'senha123',
       });
 
       // Tenta criar segundo com mesmo email
-      const response = await request(app).post('/users').send({
+      const response = await request(app).post('/v1/users').send({
         nome: 'Segundo',
         email: email,
         senha: 'senha123',
@@ -256,7 +270,7 @@ describe('User API - Endpoints com Validação', () => {
         foto: 'https://example.com/foto.jpg',
       };
 
-      const response = await request(app).post('/users').send(novoUsuario);
+      const response = await request(app).post('/v1/users').send(novoUsuario);
 
       expect(response.status).toBe(201);
       expect(response.body.data.foto).toBe(novoUsuario.foto);
@@ -270,7 +284,9 @@ describe('User API - Endpoints com Validação', () => {
         foto: 'nao-e-uma-url', // URL inválida
       };
 
-      const response = await request(app).post('/users').send(usuarioInvalido);
+      const response = await request(app)
+        .post('/v1/users')
+        .send(usuarioInvalido);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -281,19 +297,21 @@ describe('User API - Endpoints com Validação', () => {
     });
   });
 
-  describe('PUT /users/:id - Validações', () => {
+  describe('PUT /v1/users/:id - Validações', () => {
     it('deve atualizar usuário com dados válidos', async () => {
       // Cria usuário para atualizar
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Original',
-        email: `original${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario Original',
+          email: `original${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
       // Atualiza
-      const response = await request(app).put(`/users/${userId}`).send({
+      const response = await request(app).put(`/v1/users/${userId}`).send({
         nome: 'Usuario Atualizado',
       });
 
@@ -305,24 +323,28 @@ describe('User API - Endpoints com Validação', () => {
 
     it('deve retornar 400 quando nenhum campo for fornecido', async () => {
       // Cria usuário
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Teste',
-        email: `teste${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario Teste',
+          email: `teste${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
       // Tenta atualizar sem dados
-      const response = await request(app).put(`/users/${userId}`).send({});
+      const response = await request(app).put(`/v1/users/${userId}`).send({});
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
-      expect(response.body.error.details[0].message).toContain('Pelo menos um campo');
+      expect(response.body.error.details[0].message).toContain(
+        'Pelo menos um campo',
+      );
     });
 
     it('deve retornar 404 ao atualizar usuário inexistente', async () => {
-      const response = await request(app).put('/users/99999').send({
+      const response = await request(app).put('/v1/users/99999').send({
         nome: 'Teste',
       });
 
@@ -332,21 +354,25 @@ describe('User API - Endpoints com Validação', () => {
 
     it('deve retornar 409 ao tentar usar email já existente', async () => {
       // Cria dois usuários
-      const usuario1 = await request(app).post('/users').send({
-        nome: 'Usuario 1',
-        email: `user1${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const usuario1 = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario 1',
+          email: `user1${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
-      const usuario2 = await request(app).post('/users').send({
-        nome: 'Usuario 2',
-        email: `user2${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const usuario2 = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario 2',
+          email: `user2${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       // Tenta atualizar usuario2 com email do usuario1
       const response = await request(app)
-        .put(`/users/${usuario2.body.data.id}`)
+        .put(`/v1/users/${usuario2.body.data.id}`)
         .send({
           email: usuario1.body.data.email,
         });
@@ -358,16 +384,18 @@ describe('User API - Endpoints com Validação', () => {
 
     it('deve retornar 400 para validações de campos no update', async () => {
       // Cria usuário
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Teste',
-        email: `teste${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario Teste',
+          email: `teste${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
       // Tenta atualizar com dados inválidos
-      const response = await request(app).put(`/users/${userId}`).send({
+      const response = await request(app).put(`/v1/users/${userId}`).send({
         nome: 'Jo', // Muito curto
         email: 'invalido', // Sem @
       });
@@ -378,38 +406,40 @@ describe('User API - Endpoints com Validação', () => {
     });
   });
 
-  describe('DELETE /users/:id - Validações', () => {
+  describe('DELETE /v1/users/:id - Validações', () => {
     it('deve deletar usuário existente', async () => {
       // Cria usuário para deletar
-      const novoUsuario = await request(app).post('/users').send({
-        nome: 'Usuario Para Deletar',
-        email: `deletar${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const novoUsuario = await request(app)
+        .post('/v1/users')
+        .send({
+          nome: 'Usuario Para Deletar',
+          email: `deletar${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const userId = novoUsuario.body.data.id;
 
       // Deleta
-      const response = await request(app).delete(`/users/${userId}`);
+      const response = await request(app).delete(`/v1/users/${userId}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
       expect(response.body.message).toContain('removido com sucesso');
 
       // Verifica que não existe mais
-      const busca = await request(app).get(`/users/${userId}`);
+      const busca = await request(app).get(`/v1/users/${userId}`);
       expect(busca.status).toBe(404);
     });
 
     it('deve retornar 404 ao deletar usuário inexistente', async () => {
-      const response = await request(app).delete('/users/99999');
+      const response = await request(app).delete('/v1/users/99999');
 
       expect(response.status).toBe(404);
       expect(response.body.error).toHaveProperty('code', 'NOT_FOUND');
     });
 
     it('deve retornar 400 para ID inválido no delete', async () => {
-      const response = await request(app).delete('/users/abc');
+      const response = await request(app).delete('/v1/users/abc');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty('code', 'VALIDATION_ERROR');
@@ -418,7 +448,7 @@ describe('User API - Endpoints com Validação', () => {
 
   describe('Formato de Erro Padronizado', () => {
     it('deve retornar erro com estrutura padronizada', async () => {
-      const response = await request(app).get('/users/99999');
+      const response = await request(app).get('/v1/users/99999');
 
       expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('error');
@@ -429,7 +459,7 @@ describe('User API - Endpoints com Validação', () => {
     });
 
     it('deve incluir detalhes em erros de validação', async () => {
-      const response = await request(app).post('/users').send({
+      const response = await request(app).post('/v1/users').send({
         nome: 'Jo',
         email: 'invalido',
       });
@@ -461,6 +491,30 @@ describe('User API - Endpoints com Validação', () => {
       expect(response.body).toHaveProperty('success', false);
       expect(response.body.error).toHaveProperty('code', 'NOT_FOUND');
       expect(response.body.error.message).toContain('não encontrada');
+    });
+  });
+
+  describe('Versionamento da API', () => {
+    it('deve retornar 404 para rota sem versão', async () => {
+      const response = await request(app).get('/users');
+
+      expect(response.status).toBe(404);
+      expect(response.body.hint).toContain('Versões disponíveis');
+    });
+
+    it('deve acessar rotas da v1 corretamente', async () => {
+      const response = await request(app).get('/v1/users');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('success', true);
+    });
+
+    it('deve retornar health check com versões disponíveis', async () => {
+      const response = await request(app).get('/health');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('availableVersions');
+      expect(response.body.availableVersions).toContain('v1');
     });
   });
 });

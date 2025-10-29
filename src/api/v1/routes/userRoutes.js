@@ -1,7 +1,7 @@
 // src/routes/userRoutes.js
 import express from 'express';
 import * as userController from '../controllers/userController.js';
-import validate from '../middlewares/validate.js';
+import validate from '../../../middlewares/validate.js';
 import {
   createUserSchema,
   updateUserSchema,
@@ -33,10 +33,6 @@ router.put(
 );
 
 // DELETE - Remover usuário
-router.delete(
-  '/:id',
-  validate(idParamSchema, 'params'),
-  userController.remove,
-);
+router.delete('/:id', validate(idParamSchema, 'params'), userController.remove);
 
 export default router;
