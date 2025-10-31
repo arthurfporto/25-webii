@@ -39,11 +39,13 @@ describe('Subject API - Endpoints', () => {
   describe('GET /subjects/:id', () => {
     it('deve retornar disciplina específica com status 200', async () => {
       // Primeiro, cria um professor
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Teste Subject',
-        email: `prof.subject${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Teste Subject',
+          email: `prof.subject${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       // Depois cria uma disciplina
       const novaSubject = await request(app).post('/subjects').send({
@@ -81,11 +83,13 @@ describe('Subject API - Endpoints', () => {
   describe('POST /subjects', () => {
     it('deve criar nova disciplina com dados válidos', async () => {
       // Cria um professor primeiro
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Create Test',
-        email: `prof.create${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Create Test',
+          email: `prof.create${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const novaSubject = {
         nome: 'Programação Web II',
@@ -103,17 +107,21 @@ describe('Subject API - Endpoints', () => {
     });
 
     it('deve retornar 400 ao criar disciplina sem nome', async () => {
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const subjectInvalida = {
         professorId: professor.body.data.id,
       };
 
-      const response = await request(app).post('/subjects').send(subjectInvalida);
+      const response = await request(app)
+        .post('/subjects')
+        .send(subjectInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -125,7 +133,9 @@ describe('Subject API - Endpoints', () => {
         nome: 'Disciplina Sem Professor',
       };
 
-      const response = await request(app).post('/subjects').send(subjectInvalida);
+      const response = await request(app)
+        .post('/subjects')
+        .send(subjectInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -138,7 +148,9 @@ describe('Subject API - Endpoints', () => {
         professorId: 99999,
       };
 
-      const response = await request(app).post('/subjects').send(subjectInvalida);
+      const response = await request(app)
+        .post('/subjects')
+        .send(subjectInvalida);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('success', false);
@@ -149,11 +161,13 @@ describe('Subject API - Endpoints', () => {
   describe('PUT /subjects/:id', () => {
     it('deve atualizar disciplina existente', async () => {
       // Cria professor e disciplina
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Update Test',
-        email: `prof.update${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Update Test',
+          email: `prof.update${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const novaSubject = await request(app).post('/subjects').send({
         nome: 'Disciplina Original',
@@ -163,11 +177,9 @@ describe('Subject API - Endpoints', () => {
       const subjectId = novaSubject.body.data.id;
 
       // Atualiza a disciplina
-      const response = await request(app)
-        .put(`/subjects/${subjectId}`)
-        .send({
-          nome: 'Disciplina Atualizada',
-        });
+      const response = await request(app).put(`/subjects/${subjectId}`).send({
+        nome: 'Disciplina Atualizada',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('success', true);
@@ -187,11 +199,13 @@ describe('Subject API - Endpoints', () => {
 
     it('deve retornar 400 ao atualizar com professorId inexistente', async () => {
       // Cria disciplina
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Test',
-        email: `prof.test${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Test',
+          email: `prof.test${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const novaSubject = await request(app).post('/subjects').send({
         nome: 'Disciplina Teste',
@@ -214,11 +228,13 @@ describe('Subject API - Endpoints', () => {
   describe('DELETE /subjects/:id', () => {
     it('deve deletar disciplina existente', async () => {
       // Cria professor e disciplina
-      const professor = await request(app).post('/users').send({
-        nome: 'Prof. Delete Test',
-        email: `prof.delete${Date.now()}@escola.com`,
-        senha: 'senha123',
-      });
+      const professor = await request(app)
+        .post('/users')
+        .send({
+          nome: 'Prof. Delete Test',
+          email: `prof.delete${Date.now()}@escola.com`,
+          senha: 'senha123',
+        });
 
       const novaSubject = await request(app).post('/subjects').send({
         nome: 'Disciplina Para Deletar',

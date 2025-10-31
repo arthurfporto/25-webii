@@ -1,7 +1,7 @@
 // src/server.js
 import express from 'express';
 import prisma from './config/database.js';
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from './routes/subjectRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
