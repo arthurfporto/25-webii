@@ -13,16 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo User (Professor ou Admin)
+// Modelo User (suporta v1 e v2)
 model User {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  senha     String
-  foto      String? // ? = opcional
-  papel     String   @default("PROFESSOR") // 'PROFESSOR' ou 'ADMIN'
-  createdAt DateTime @default(now()) @map("data_criacao")
-  updatedAt DateTime @updatedAt @map("data_atualizacao")
+  id             Int      @id @default(autoincrement())
+  
+  // Campos v1 (mantidos para compatibilidade)
+  nome           String
+  papel          String   @default("PROFESSOR")
+  
+  // Novos campos v2
+  primeiro_nome  String?
+  sobrenome      String?
+  telefone       String?
+  tipo_usuario   String?  @default("professor")
+  
+  // Campos comuns
+  email          String   @unique
+  senha          String
+  foto           String?
+  createdAt      DateTime @default(now()) @map("data_criacao")
+  updatedAt      DateTime @updatedAt @map("data_atualizacao")
 
-  @@map("users") // nome da tabela no banco
+  @@map("users")
 }

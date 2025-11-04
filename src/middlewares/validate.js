@@ -4,7 +4,7 @@ import { ValidationError } from '../errors/AppError.js';
 /**
  * Middleware factory para validação com Zod
  * Cria um middleware que valida dados contra um schema Zod
- * 
+ *
  * @param {Object} schema - Schema Zod para validação
  * @param {string} source - De onde vem os dados ('body', 'params', 'query')
  * @returns {Function} Middleware Express
@@ -14,9 +14,7 @@ const validate = (schema, source = 'body') => {
     try {
       // Pega os dados da fonte especificada
       const dataToValidate = req[source];
-      console.log('aaaaaa');
-      console.log(dataToValidate);
-      console.log('aaaaaa');
+
       // Valida usando safeParse (não lança exceção)
       const result = schema.safeParse(dataToValidate);
 

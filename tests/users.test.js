@@ -499,7 +499,7 @@ describe('User API - Endpoints com Validação', () => {
       const response = await request(app).get('/users');
 
       expect(response.status).toBe(404);
-      expect(response.body.hint).toContain('Versões disponíveis');
+      expect(response.body.error.hint).toContain('Versões disponíveis');
     });
 
     it('deve acessar rotas da v1 corretamente', async () => {

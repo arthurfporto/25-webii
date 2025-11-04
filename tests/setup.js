@@ -10,6 +10,8 @@ beforeAll(async () => {
   try {
     await prisma.$connect();
     console.log('🔗 Conectado ao banco de dados para testes');
+    await prisma.user.deleteMany({});
+    console.log('🧹 Dados de teste limpos');
   } catch (error) {
     console.error('❌ Erro ao conectar ao banco:', error);
     throw error;
@@ -32,6 +34,6 @@ afterAll(async () => {
 beforeEach(async () => {
   // Descomente as linhas abaixo para limpar dados entre testes
   // CUIDADO: Isso vai deletar TODOS os dados das tabelas!
-  await prisma.user.deleteMany({});
-  console.log('🧹 Dados de teste limpos');
+  // await prisma.user.deleteMany({});
+  // console.log('🧹 Dados de teste limpos');
 });

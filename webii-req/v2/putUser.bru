@@ -1,0 +1,23 @@
+meta {
+  name: putUser
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{url_local}}/v2/users/2
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "primeiro_nome": "Arthur",
+    "sobrenome": "Porto",
+    "senha": "senha123",
+    "papel": "PROFESSOR",
+    "email": "add3d@a.com",
+    "telefone": "38991978329",
+    "tipo_usuario": "admin"
+    }
+}
