@@ -3,6 +3,7 @@ import prisma from './config/database.js';
 import v1Routes from './api/v1/routes/index.js';
 import v2Routes from './api/v2/routes/index.js';
 import errorHandler from './middlewares/errorHandler.js';
+import { deprecateV1 } from './middlewares/deprecation.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,7 +36,7 @@ app.get('/health', async (req, res) => {
       v1: {
         status: 'active',
         endpoint: '/v1',
-        deprecated: false,
+        deprecated: false, // Mudar para true quando depreciar
       },
       v2: {
         status: 'active',
@@ -59,7 +60,10 @@ app.get('/health', async (req, res) => {
 });
 
 // Rotas da API v1
-app.use('/v1', v1Routes);
+// app.use('/v1', v1Routes);
+
+// Rotas da API v1 (com middleware de deprecação - atualmente desabilitado)
+app.use('/v1', deprecateV1, v1Routes);
 
 // Rotas da API v2
 app.use('/v2', v2Routes);
@@ -73,8 +77,8 @@ app.use((req, res, next) => {
       message: `Rota ${req.method} ${req.originalUrl} não encontrada`,
       hint: 'Versões disponíveis da API: /v1, /v2',
       availableVersions: [
-        { version: 'v1', endpoint: '/v1' },
-        { version: 'v2', endpoint: '/v2' },
+        { version: 'v1', endpoint: '/v1', deprecated: false },
+        { version: 'v2', endpoint: '/v2', deprecated: false },
       ],
     },
     timestamp: new Date().toISOString(),
@@ -93,6 +97,9 @@ app.listen(PORT, () => {
   console.log(`📦 API v2 (NEW!): http://localhost:${PORT}/v2`);
   console.log(`👥 Usuários v1: http://localhost:${PORT}/v1/users`);
   console.log(`👥 Usuários v2: http://localhost:${PORT}/v2/users`);
+  console.log(
+    `⚠️  Para depreciar v1 futuramente, edite src/middlewares/deprecation.js`,
+  );
 });
 
 export default app;
