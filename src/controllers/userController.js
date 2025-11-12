@@ -83,7 +83,6 @@ export const create = async (req, res) => {
       data: novoUsuario,
     });
   } catch (error) {
-
     // Erros de validação retornam 400
     if (
       error.message.includes('obrigatórios') ||
@@ -119,11 +118,8 @@ export const update = async (req, res) => {
       data: usuarioAtualizado,
     });
   } catch (error) {
-
     // Erros de validação
-    if (
-      error.message.includes('já está em uso')
-    ) {
+    if (error.message.includes('já está em uso')) {
       return res.status(400).json({
         success: false,
         message: error.message,
@@ -136,7 +132,6 @@ export const update = async (req, res) => {
         message: error.message,
       });
     }
-
 
     console.error('Erro ao atualizar usuário:', error);
     res.status(500).json({
@@ -162,7 +157,6 @@ export const remove = async (req, res) => {
       data: usuarioRemovido,
     });
   } catch (error) {
-
     // Usuário não encontrado
     if (error.message.includes('não encontrado')) {
       return res.status(404).json({
