@@ -1,4 +1,3 @@
-
 // src/services/userService.js
 import prisma from '../config/database.js';
 
@@ -36,8 +35,7 @@ export const getAllUsers = async () => {
  * @param {number} userId - ID do usuário
  * @returns {Promise<Object|null>} Usuário encontrado ou null
  */
-export const getUserById = async (userId) => {
-
+export const getUserById = async userId => {
   // Validação: ID deve ser um número positivo
   if (!userId || isNaN(userId) || userId <= 0) {
     throw new Error('ID inválido. Deve ser um número positivo');
@@ -63,7 +61,7 @@ export const getUserById = async (userId) => {
  * @param {string} email - Email a ser verificado
  * @returns {Promise<boolean>} True se email existe, false caso contrário
  */
-const emailExists = async (email) => {
+const emailExists = async email => {
   const usuario = await prisma.user.findUnique({
     where: { email },
   });
@@ -76,13 +74,12 @@ const emailExists = async (email) => {
  * @param {Object} userData - Dados do usuário
  * @throws {Error} Se validação falhar
  */
-const validateUserData = (userData) => {
+const validateUserData = userData => {
   const { nome, email, senha } = userData;
 
   if (!nome || !email || !senha) {
     throw new Error('Nome, email e senha são obrigatórios');
   }
-
 };
 
 /**
@@ -91,7 +88,7 @@ const validateUserData = (userData) => {
  * @returns {Promise<Object>} Usuário criado
  * @throws {Error} Se validação falhar ou email já existir
  */
-export const createUser = async (userData) => {
+export const createUser = async userData => {
   // 1. Validar dados de entrada
   validateUserData(userData);
 
@@ -132,7 +129,6 @@ export const createUser = async (userData) => {
  * @throws {Error} Se validação falhar ou usuário não existir
  */
 export const updateUser = async (userId, userData) => {
-
   if (!userId || isNaN(userId) || userId <= 0) {
     throw new Error('ID inválido. Deve ser um número positivo');
   }
@@ -144,7 +140,7 @@ export const updateUser = async (userId, userData) => {
     throw new Error(`Usuário com ID ${userId} não encontrado`);
   }
 
-  if (userData.email && (userData.email !== usuarioExistente.email)) {
+  if (userData.email && userData.email !== usuarioExistente.email) {
     const emailJaExiste = await emailExists(userData.email);
     if (emailJaExiste) {
       throw new Error('Email já está em uso por outro usuário');
@@ -182,7 +178,7 @@ export const updateUser = async (userId, userData) => {
  * @returns {Promise<Object>} Dados do usuário removido
  * @throws {Error} Se usuário não existir
  */
-export const deleteUser = async (userId) => {
+export const deleteUser = async userId => {
   // 1. Validar ID
   if (!userId || isNaN(userId) || userId <= 0) {
     throw new Error('ID inválido. Deve ser um número positivo');
@@ -217,5 +213,5 @@ export default {
   getUserById,
   createUser,
   deleteUser,
-  updateUser
+  updateUser,
 };
