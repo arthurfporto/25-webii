@@ -1,0 +1,24 @@
+meta {
+  name: putfotouser
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{url_local}}/v2/users/398
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+      "nome": "Arthur",
+      "senha": "senha123",
+      "papel": "PROFESSOR",
+      "email": "axsxsd@a.com"
+    }
+}
+
+body:multipart-form {
+  foto: @file(/Users/ap/Downloads/Gemini_Generated_Image_f18l4xf18l4xf18l.png)
+}

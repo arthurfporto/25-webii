@@ -5,6 +5,7 @@ import {
   NotFoundError,
   ConflictError,
 } from '../../../errors/AppError.js';
+import { uploadToUploadcare } from './uploadService.js';
 
 /**
  * User Service v2
@@ -88,14 +89,26 @@ const emailExists = async email => {
 /**
  * Cria um novo usuário (formato v2)
  * @param {Object} userData - Dados do novo usuário
+ * @param {Object} file - Arquivo de foto (opcional, vem do Multer)
  * @returns {Promise<Object>} Usuário criado no formato v2
  * @throws {ConflictError} Se email já existir
  */
-export const createUser = async userData => {
+export const createUser = async (userData, file = null) => {
   // Verificar se email já existe
   const emailJaExiste = await emailExists(userData.email);
   if (emailJaExiste) {
     throw new ConflictError('Email já cadastrado no sistema', 'email');
+  }
+
+  // Se tem arquivo, faz upload para Uploadcare
+  let fotoUrl = null;
+  if (file) {
+    console.log('📸 [v2] Processando upload de foto...');
+    fotoUrl = await uploadToUploadcare(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+    );
   }
 
   // Preparar dados para criação
@@ -114,7 +127,7 @@ export const createUser = async userData => {
     // Campos comuns
     email: userData.email,
     senha: userData.senha, // TODO: Hash da senha
-    foto: userData.foto || null,
+    foto: fotoUrl || userData.foto || null, // Prioriza arquivo enviado
   };
 
   // Criar usuário no banco
@@ -132,6 +145,8 @@ export const createUser = async userData => {
     },
   });
 
+  console.log('✅ [v2] Usuário criado com sucesso:', novoUsuario.id);
+
   return novoUsuario;
 };
 
@@ -139,12 +154,13 @@ export const createUser = async userData => {
  * Atualiza um usuário existente (formato v2)
  * @param {number} userId - ID do usuário
  * @param {Object} userData - Dados para atualizar
+ * @param {Object} file - Arquivo de foto (opcional, vem do Multer)
  * @returns {Promise<Object>} Usuário atualizado no formato v2
  * @throws {ValidationError} Se ID for inválido
  * @throws {NotFoundError} Se usuário não existir
  * @throws {ConflictError} Se email já estiver em uso
  */
-export const updateUser = async (userId, userData) => {
+export const updateUser = async (userId, userData, file = null) => {
   // Validar ID
   if (!userId || isNaN(userId) || userId <= 0) {
     throw new ValidationError('ID inválido. Deve ser um número positivo');
@@ -168,6 +184,18 @@ export const updateUser = async (userId, userData) => {
         'email',
       );
     }
+  }
+
+  // Se tem arquivo, faz upload para Uploadcare
+  let fotoUrl = null;
+  if (file) {
+    console.log('📸 [v2 UPDATE] Processando upload de nova foto...');
+    fotoUrl = await uploadToUploadcare(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+    );
+    console.log('✅ [v2 UPDATE] Nova foto enviada:', fotoUrl);
   }
 
   // Preparar dados para atualização
@@ -202,7 +230,13 @@ export const updateUser = async (userId, userData) => {
   // Campos comuns
   if (userData.email) dadosAtualizacao.email = userData.email;
   if (userData.senha) dadosAtualizacao.senha = userData.senha; // TODO: Hash
-  if (userData.foto !== undefined) dadosAtualizacao.foto = userData.foto;
+
+  // Foto: prioriza arquivo enviado > URL manual > mantém existente
+  if (file) {
+    dadosAtualizacao.foto = fotoUrl;
+  } else if (userData.foto !== undefined) {
+    dadosAtualizacao.foto = userData.foto;
+  }
 
   // Atualizar no banco
   const usuarioAtualizado = await prisma.user.update({
@@ -220,6 +254,11 @@ export const updateUser = async (userId, userData) => {
       updatedAt: true,
     },
   });
+
+  console.log(
+    '✅ [v2 UPDATE] Usuário atualizado com sucesso:',
+    usuarioAtualizado.id,
+  );
 
   return usuarioAtualizado;
 };

@@ -7,6 +7,7 @@ import {
   updateUserSchema,
   idParamSchema,
 } from '../schemas/userSchema.js';
+import upload from '../../../config/multer.js';
 
 const router = express.Router();
 
@@ -20,8 +21,13 @@ const router = express.Router();
  * - Campo telefone
  */
 
-// CREATE - Criar novo usuário
-router.post('/', validate(createUserSchema, 'body'), userController.create);
+// CREATE - Criar novo usuário (com upload de foto opcional)
+router.post(
+  '/',
+  upload.single('foto'), // Multer processa o campo "foto" (se existir)
+  validate(createUserSchema, 'body'), // Valida campos de texto
+  userController.create,
+);
 
 // READ - Listar todos os usuários
 router.get('/', userController.getAll);
@@ -33,6 +39,7 @@ router.get('/:id', validate(idParamSchema, 'params'), userController.getById);
 router.put(
   '/:id',
   validate(idParamSchema, 'params'),
+  upload.single('foto'),
   validate(updateUserSchema, 'body'),
   userController.update,
 );

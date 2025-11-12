@@ -47,10 +47,11 @@ export const getById = async (req, res, next) => {
 /**
  * POST /v2/users
  * Cria um novo usuário (formato v2)
+ * Aceita multipart/form-data para upload de foto
  */
 export const create = async (req, res, next) => {
   try {
-    const novoUsuario = await userService.createUser(req.body);
+    const novoUsuario = await userService.createUser(req.body, req.file);
 
     res.status(201).json({
       success: true,
@@ -62,15 +63,19 @@ export const create = async (req, res, next) => {
     next(error);
   }
 };
-
 /**
  * PUT /v2/users/:id
  * Atualiza um usuário existente (formato v2)
+ * Aceita multipart/form-data para upload de foto
  */
 export const update = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const usuarioAtualizado = await userService.updateUser(id, req.body);
+    const usuarioAtualizado = await userService.updateUser(
+      id,
+      req.body,
+      req.file,
+    );
 
     res.status(200).json({
       success: true,

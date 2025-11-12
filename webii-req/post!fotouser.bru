@@ -1,0 +1,29 @@
+meta {
+  name: post!fotouser
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{url_local}}/v2/users
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+      "nome": "Arthur",
+      "senha": "senha123",
+      "papel": "PROFESSOR",
+      "email": "axsxsd@a.com"
+    }
+}
+
+body:multipart-form {
+  primeiro_nome: Julesca
+  sobrenome: Maria
+  email: julesca2@julescamaria.com
+  senha: 123456
+  tipo_usuario: professor
+  telefone: 11987654321
+}
