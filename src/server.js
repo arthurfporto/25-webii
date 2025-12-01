@@ -1,6 +1,6 @@
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
 import prisma from './config/database.js';
+import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import v1Routes from './api/v1/routes/index.js';
 import v2Routes from './api/v2/routes/index.js';
@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware para parsing JSON
 app.use(express.json());
 
-// Documentação Swagger - DEVE VIR ANTES DAS ROTAS VERSIONADAS
+// Documentação Swagger
 app.use(
   '/api-docs',
   swaggerUi.serve,

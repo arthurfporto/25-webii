@@ -141,6 +141,7 @@ const router = express.Router();
  *                   example: 10
  */
 router.get('/', userController.getAll);
+
 /**
  * @swagger
  * /v1/users/{id}:

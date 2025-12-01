@@ -28,7 +28,7 @@ const swaggerDefinition = {
     `,
     contact: {
       name: 'Suporte API',
-      email: 'api@geradorprovas.com',
+      email: 'contato@arthurporto.com.br',
     },
     license: {
       name: 'MIT',
