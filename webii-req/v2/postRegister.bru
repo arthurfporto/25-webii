@@ -1,0 +1,19 @@
+meta {
+  name: postRegister
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{url_local}}/v2/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  
+  {
+      "email": "joao@escola.com",
+      "senha": "Senha123"
+  }
+}

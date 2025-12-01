@@ -24,7 +24,16 @@ const swaggerDefinition = {
       
       ## Versões Disponíveis
       - **v1:** Versão estável com campos consolidados
-      - **v2:** Versão atual com novos campos e upload de arquivos
+      - **v2:** Versão atual com novos campos e upload de arquivos e autenticação JWT
+
+      ## Autenticação
+
+      Esta API utiliza JWT (JSON Web Token) para autenticação.
+
+      1. Faça login ou registro em \`/v2/auth/login\` ou \`/v2/auth/register\`
+      2. Copie o token retornado
+      3. Clique no botão "Authorize" acima
+      4. Cole o token no formato: \`Bearer seu_token_aqui\`
     `,
     contact: {
       name: 'Suporte API',
@@ -45,6 +54,23 @@ const swaggerDefinition = {
       description: 'Servidor de Produção (exemplo)',
     },
   ],
+  // NOVO: Configuração de segurança
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Token JWT obtido no login',
+      },
+    },
+  },
+  // Segurança global (pode ser sobrescrita por rota)
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
   tags: [
     {
       name: 'Health',
@@ -56,7 +82,7 @@ const swaggerDefinition = {
     },
     {
       name: 'Usuários v2',
-      description: 'Gerenciamento de usuários com upload de fotos (API v2)',
+      description: 'Gerenciamento de usuários com upload de fotos (API v2) e autenticação JWT',
     },
   ],
 };

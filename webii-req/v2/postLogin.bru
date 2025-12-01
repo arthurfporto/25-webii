@@ -1,0 +1,19 @@
+meta {
+  name: postLogin
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{url_local}}/v2/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  
+  {
+      "email": "joao@escola.com",
+      "senha": "Senha123"
+  }
+}
