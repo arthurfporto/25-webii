@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import authController from '../controllers/authController.js';
+import { Router } from "express";
+import authController from "../controllers/authController.js";
+import authMiddleware from "../../../middlewares/auth.js";
 
 const router = Router();
 
@@ -83,33 +84,33 @@ const router = Router();
  */
 
 /**
-   * @swagger
-   * /v2/auth/register:
-   *   post:
-   *     summary: Registra um novo usuário
-   *     description: Cria uma nova conta de usuário e retorna um token JWT
-   *     tags:
-   *       - Autenticação
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             $ref: '#/components/schemas/RegisterRequest'
-   *     responses:
-   *       201:
-   *         description: Usuário registrado com sucesso
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/AuthResponse'
-   *       400:
-   *         description: Dados inválidos
-   *       409:
-   *         description: Email já está em uso
-   */
-router.post('/register', authController.register.bind(authController));
-
+ * @swagger
+ * /v2/auth/register:
+ *   post:
+ *     summary: Registra um novo usuário
+ *     description: Cria uma nova conta de usuário e retorna um token JWT
+ *     tags:
+ *       - Autenticação
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: Usuário registrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Dados inválidos
+ *       409:
+ *         description: Email já está em uso
+ */
+router.post("/register", authController.register.bind(authController));
 
 /**
  * @swagger
@@ -119,6 +120,7 @@ router.post('/register', authController.register.bind(authController));
  *     description: Autentica o usuário e retorna um token JWT
  *     tags:
  *       - Autenticação
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -135,25 +137,39 @@ router.post('/register', authController.register.bind(authController));
  *       401:
  *         description: Credenciais inválidas
  */
-router.post('/login', authController.login.bind(authController));
+router.post("/login", authController.login.bind(authController));
 
 /**
  * @swagger
  * /v2/auth/me:
  *   get:
  *     summary: Retorna dados do usuário autenticado
- *     description: Retorna os dados do usuário com base no token JWT
+ *     description: |
+ *       Retorna os dados completos do usuário com base no token JWT.
+ *       **Requer autenticação**.
  *     tags:
  *       - Autenticação
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dados do usuário
+ *         description: Dados do usuário autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/UserV2'
  *       401:
  *         description: Token inválido ou não fornecido
  */
-// GET /v2/auth/me - Dados do usuário autenticado (será protegida na próxima aula)
-// router.get('/me', authMiddleware, authController.me.bind(authController));
+router.get("/me", authMiddleware, authController.me.bind(authController));
 
 export default router;

@@ -1,0 +1,25 @@
+meta {
+  name: postUserLogin
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{url_local}}/v2/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "primeiro_nome": "Novo",
+    "sobrenome": "Usuario",
+    "email": "novo.protegido@escola.com",
+    "senha": "123456",
+    "tipo_usuario": "professor"
+  }
+}
