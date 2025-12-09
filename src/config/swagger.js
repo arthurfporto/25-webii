@@ -61,20 +61,19 @@ const swaggerDefinition = {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Token JWT obtido no login',
+        description: 'Insira o token JWT obtido no login (sem o prefixo "Bearer")',
       },
     },
   },
-  // Segurança global (pode ser sobrescrita por rota)
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+  // Não aplicar segurança global - cada rota define sua própria segurança
   tags: [
     {
       name: 'Health',
       description: 'Endpoints de verificação de saúde da API',
+    },
+    {
+      name: 'Autenticação',
+      description: 'Endpoints de autenticação e gerenciamento de sessão',
     },
     {
       name: 'Usuários v1',
