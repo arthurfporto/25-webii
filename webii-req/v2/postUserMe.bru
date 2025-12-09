@@ -1,0 +1,25 @@
+meta {
+  name: postUserMe
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{url_local}}/v2/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjc1OSwiZW1haWwiOiJhYXNkZjJAYS5jb20iLCJyb2xlIjoiUFJPRkVTU09SIiwiaWF0IjoxNzY1MzAyNjIzLCJleHAiOjE3NjUzMDYyMjMsImF1ZCI6ImFwaS1nZXJhZG9yLXByb3Zhcy1jbGllbnQiLCJpc3MiOiJhcGktZ2VyYWRvci1wcm92YXMifQ.6Ofvaqg7iqwWVJUedzC7W2NtqIzrvr0DUyzpAF-7n7I
+}
+
+body:json {
+  {
+    "primeiro_nome": "Novo",
+    "sobrenome": "Usuario",
+    "email": "novo.protegido@escola.com",
+    "senha": "123456",
+    "tipo_usuario": "professor"
+  }
+}

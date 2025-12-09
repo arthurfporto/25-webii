@@ -64,7 +64,7 @@ class AuthController {
   async me(req, res, next) {
     try {
       // O middleware de autenticação já populou req.user
-      const user = await authService.findById(req.user.sub);
+      const user = await authService.findById(req.user.id);
 
       res.status(200).json({
         success: true,
