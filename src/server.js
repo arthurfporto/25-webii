@@ -6,7 +6,9 @@ import v1Routes from './api/v1/routes/index.js';
 import v2Routes from './api/v2/routes/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 import { deprecateV1 } from './middlewares/deprecation.js';
-import helmetConfig from './config/helmet.js'; // NOVO
+import helmetConfig from './config/helmet.js';
+import corsConfig from './config/cors.js'; // NOVO
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +18,8 @@ const PORT = process.env.PORT || 3000;
 // ============================================
 app.use(helmetConfig); // NOVO - Headers de segurança
 // Middleware para parsing JSON
+
+app.use(corsConfig);    // CORS - NOVO (deve vir antes das rotas)
 app.use(express.json());
 
 // Documentação Swagger

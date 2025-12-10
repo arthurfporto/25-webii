@@ -1,14 +1,15 @@
 // src/api/v2/routes/userRoutes.js
-import express from "express";
-import * as userController from "../controllers/userController.js";
-import validate from "../../../middlewares/validate.js";
-import authMiddleware from "../../../middlewares/auth.js";
+import express from 'express';
+import * as userController from '../controllers/userController.js';
+import validate from '../../../middlewares/validate.js';
+import authMiddleware from '../../../middlewares/auth.js';
+import authorize, { isAdmin, isOwnerOrAdmin } from '../../../middlewares/authorize.js';
 import {
   createUserSchema,
   updateUserSchema,
   idParamSchema,
-} from "../schemas/userSchema.js";
-import upload from "../../../config/multer.js";
+} from '../schemas/userSchema.js';
+import upload from '../../../config/multer.js';
 
 const router = express.Router();
 
@@ -21,58 +22,6 @@ const router = express.Router();
  *       scheme: bearer
  *       bearerFormat: JWT
  *       description: Token JWT obtido no login
- *
- *   schemas:
- *     UserV2:
- *       type: object
- *       required:
- *         - primeiro_nome
- *         - sobrenome
- *         - email
- *         - senha
- *       properties:
- *         id:
- *           type: integer
- *           description: ID único do usuário
- *           example: 1
- *         primeiro_nome:
- *           type: string
- *           minLength: 2
- *           maxLength: 50
- *           description: Primeiro nome do usuário
- *           example: "João"
- *         sobrenome:
- *           type: string
- *           minLength: 2
- *           maxLength: 50
- *           description: Sobrenome do usuário
- *           example: "Silva"
- *         email:
- *           type: string
- *           format: email
- *           description: Email único do usuário
- *           example: "joao.silva@escola.com"
- *         tipo_usuario:
- *           type: string
- *           enum: [professor, admin]
- *           default: professor
- *           description: Tipo de usuário no sistema
- *           example: "professor"
- *         telefone:
- *           type: string
- *           nullable: true
- *           description: Telefone com 10 ou 11 dígitos
- *           example: "11987654321"
- *         foto:
- *           type: string
- *           format: uri
- *           nullable: true
- *           description: URL da foto de perfil
- *           example: "https://ucarecdn.com/uuid/"
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Data de criação do usuário
  */
 
 // ============================================
@@ -84,9 +33,7 @@ const router = express.Router();
  * /v2/users:
  *   get:
  *     summary: Lista todos os usuários (público)
- *     description: |
- *       Retorna lista de usuários no formato v2.
- *       **Esta rota é pública** para facilitar testes.
+ *     description: Retorna lista de usuários. Rota pública para consulta.
  *     tags:
  *       - Usuários v2
  *     security: []
@@ -94,14 +41,14 @@ const router = express.Router();
  *       200:
  *         description: Lista retornada com sucesso
  */
-router.get("/", userController.getAll);
+router.get('/', userController.getAll);
 
 /**
  * @swagger
  * /v2/users/{id}:
  *   get:
  *     summary: Busca um usuário por ID (público)
- *     description: Retorna os dados de um usuário no formato v2
+ *     description: Retorna dados de um usuário específico.
  *     tags:
  *       - Usuários v2
  *     security: []
@@ -111,28 +58,26 @@ router.get("/", userController.getAll);
  *         required: true
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: ID numérico do usuário
  *     responses:
  *       200:
  *         description: Usuário encontrado
  *       404:
  *         description: Usuário não encontrado
  */
-router.get("/:id", validate(idParamSchema, "params"), userController.getById);
+router.get('/:id', validate(idParamSchema, 'params'), userController.getById);
 
 // ============================================
-// ROTAS PROTEGIDAS (requerem autenticação)
+// ROTAS PROTEGIDAS (requerem autenticação + autorização)
 // ============================================
 
 /**
  * @swagger
  * /v2/users:
  *   post:
- *     summary: Cria um novo usuário (protegido)
+ *     summary: Cria um novo usuário (apenas ADMIN)
  *     description: |
- *       Cadastra usuário com suporte a upload de foto.
- *       **Requer autenticação** - apenas administradores ou usuários autenticados podem criar novos usuários.
+ *       Cadastra novo usuário no sistema.
+ *       **Requer autenticação e papel ADMIN**.
  *     tags:
  *       - Usuários v2
  *     security:
@@ -142,52 +87,35 @@ router.get("/:id", validate(idParamSchema, "params"), userController.getById);
  *       content:
  *         multipart/form-data:
  *           schema:
- *             type: object
- *             required:
- *               - primeiro_nome
- *               - sobrenome
- *               - email
- *               - senha
- *             properties:
- *               primeiro_nome:
- *                 type: string
- *               sobrenome:
- *                 type: string
- *               email:
- *                 type: string
- *               senha:
- *                 type: string
- *               tipo_usuario:
- *                 type: string
- *               telefone:
- *                 type: string
- *               foto:
- *                 type: string
- *                 format: binary
+ *             $ref: '#/components/schemas/UserV2'
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
  *       401:
  *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão (não é ADMIN)
  *       409:
  *         description: Email já cadastrado
  */
 router.post(
-  "/",
-  authMiddleware, // 🔒 Protegido
-  upload.single("foto"),
-  validate(createUserSchema, "body"),
-  userController.create
+  '/',
+  authMiddleware,         // 🔒 Primeiro: verifica autenticação
+  isAdmin,                // 🔒 Segundo: verifica se é ADMIN
+  upload.single('foto'),
+  validate(createUserSchema, 'body'),
+  userController.create,
 );
 
 /**
  * @swagger
  * /v2/users/{id}:
  *   put:
- *     summary: Atualiza um usuário (protegido)
+ *     summary: Atualiza um usuário (próprio ou ADMIN)
  *     description: |
  *       Atualiza dados do usuário.
- *       **Requer autenticação**.
+ *       - Usuários comuns podem atualizar **apenas seu próprio** perfil
+ *       - ADMIN pode atualizar **qualquer** usuário
  *     tags:
  *       - Usuários v2
  *     security:
@@ -204,47 +132,34 @@ router.post(
  *         multipart/form-data:
  *           schema:
  *             type: object
- *             properties:
- *               primeiro_nome:
- *                 type: string
- *               sobrenome:
- *                 type: string
- *               email:
- *                 type: string
- *               senha:
- *                 type: string
- *               tipo_usuario:
- *                 type: string
- *               telefone:
- *                 type: string
- *               foto:
- *                 type: string
- *                 format: binary
  *     responses:
  *       200:
  *         description: Usuário atualizado
  *       401:
  *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão
  *       404:
  *         description: Usuário não encontrado
  */
 router.put(
-  "/:id",
-  authMiddleware, // 🔒 Protegido
-  validate(idParamSchema, "params"),
-  upload.single("foto"),
-  validate(updateUserSchema, "body"),
-  userController.update
+  '/:id',
+  authMiddleware,           // 🔒 Verifica autenticação
+  validate(idParamSchema, 'params'),
+  isOwnerOrAdmin('id'),     // 🔒 Verifica se é dono do recurso ou ADMIN
+  upload.single('foto'),
+  validate(updateUserSchema, 'body'),
+  userController.update,
 );
 
 /**
  * @swagger
  * /v2/users/{id}:
  *   delete:
- *     summary: Remove um usuário (protegido)
+ *     summary: Remove um usuário (apenas ADMIN)
  *     description: |
  *       Deleta permanentemente um usuário.
- *       **Requer autenticação**.
+ *       **Requer autenticação e papel ADMIN**.
  *     tags:
  *       - Usuários v2
  *     security:
@@ -260,14 +175,17 @@ router.put(
  *         description: Usuário removido
  *       401:
  *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão (não é ADMIN)
  *       404:
  *         description: Usuário não encontrado
  */
 router.delete(
-  "/:id",
-  authMiddleware, // 🔒 Protegido
-  validate(idParamSchema, "params"),
-  userController.remove
+  '/:id',
+  authMiddleware,          // 🔒 Verifica autenticação
+  isAdmin,                 // 🔒 Verifica se é ADMIN
+  validate(idParamSchema, 'params'),
+  userController.remove,
 );
 
 export default router;
