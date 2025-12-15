@@ -1,0 +1,57 @@
+# .github/workflows/ci.yml
+# Pipeline de CI - Executado em Pull Requests
+
+name: CI - Testes Automatizados
+
+# Quando este workflow deve ser executado?
+on:
+  pull_request:
+    branches:
+      - main # Executa quando PR é aberto para main
+      - develop # Executa quando PR é aberto para develop
+  # push:
+  #   branches:
+  #     - main # Também executa em push direto para main
+
+# Definição dos jobs (tarefas)
+jobs:
+  test:
+    name: Executar Testes
+    runs-on: ubuntu-latest # Usa máquina virtual Ubuntu
+
+    # Variáveis de ambiente para o job
+    env:
+      NODE_ENV: test
+      DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+      JWT_SECRET: 'chave-secreta-para-testes-ci-32-caracteres'
+      JWT_EXPIRES_IN: '1h'
+      BCRYPT_SALT_ROUNDS: '4'
+
+    steps:
+      # 1. Baixa o código do repositório
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Configura Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Cache das dependências para acelerar
+
+      # 3. Instala dependências
+      - name: Instalar dependências
+        run: npm ci # 'ci' é mais rápido e determinístico que 'install'
+
+      # 4. Gera o Prisma Client
+      - name: Gerar Prisma Client
+        run: npx prisma generate
+
+      # 5. Executa os testes
+      - name: Executar testes
+        run: npm run test:ci
+
+      # 6. (Opcional) Mostra resumo dos testes
+      - name: Resumo dos testes
+        if: always() # Executa mesmo se o step anterior falhar
+        run: echo "✅ Pipeline de CI concluído!"
