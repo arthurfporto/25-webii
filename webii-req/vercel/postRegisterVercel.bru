@@ -1,11 +1,11 @@
 meta {
-  name: postUser
+  name: postRegisterVercel
   type: http
-  seq: 5
+  seq: 1
 }
 
 post {
-  url: {{url_local}}/v2/users/
+  url: {{url_local}}/v2/auth/register
   body: json
   auth: none
 }
@@ -14,9 +14,9 @@ body:json {
   {
     "primeiro_nome": "aaa",
     "sobrenome": "Paaaorto",
-    "senha": "A@123*qwerty",
+    "senha": "Aasdfsd@123*qwerty",
     "papel": "PROFESSOR",
-    "email": "a2@a.com",
+    "email": "aasdf2@a.com",
     "telefone": "38991978329",
     "tipo_usuario": "admin"
     }
